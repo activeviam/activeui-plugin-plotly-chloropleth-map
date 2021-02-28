@@ -3,26 +3,33 @@ import {
   createPluginRegistry,
   allCellsPreset,
   allCellStylesPreset,
-  allWidgetsPreset,
+  pluginWidgetPivotTable,
+  pluginWidgetPlotlyLineChart,
+  pluginWidgetPlotlyScatterPlot,
+  pluginWidgetKpi,
   allEventListenersPreset,
   allMenuItemsPreset,
   allTitleBarButtonsPreset,
   TableWidgetPlugin,
-  DrillthroughTableWidgetState,
 } from "@activeviam/activeui-sdk";
 
 import { pluginMenuItemSaveWidgetAs } from "./plugins/menu-items/pluginMenuItemSaveWidgetAs";
 import { pluginChloroplethMap } from "./training/pluginChloroplethMap";
 
-const widgetPlugins = allWidgetsPreset.widget;
-widgetPlugins[pluginChloroplethMap.key] = pluginChloroplethMap;
+const widgetPlugins = {
+  [pluginWidgetPivotTable.key]: pluginWidgetPivotTable,
+  [pluginWidgetPlotlyLineChart.key]: pluginWidgetPlotlyLineChart,
+  [pluginWidgetPlotlyScatterPlot.key]: pluginWidgetPlotlyScatterPlot,
+  [pluginWidgetKpi.key]: pluginWidgetKpi,
+  [pluginChloroplethMap.key]: pluginChloroplethMap,
+};
 
 const plotlyWidgetKeys = Object.keys(widgetPlugins).filter((key) =>
   key.startsWith("plotly")
 );
 
 plotlyWidgetKeys.forEach((key) => {
-  const widgetPlugin = allWidgetsPreset.widget[key];
+  const widgetPlugin = widgetPlugins[key];
   widgetPlugin.menuItems = ["remove-widget", "duplicate-widget", "save-as"];
   widgetPlugin.titleBarButtons = ["full-screen", "toggle-query-mode"];
   widgetPlugin.eventListeners = [];
@@ -55,42 +62,6 @@ pivotTablePlugin.contextMenuItems = [
   "export-csv",
 ];
 
-const drillthroughTablePlugin = widgetPlugins[
-  "drillthrough-table"
-] as TableWidgetPlugin<DrillthroughTableWidgetState>;
-drillthroughTablePlugin.menuItems = [
-  "remove-widget",
-  "duplicate-widget",
-  "save-as",
-];
-drillthroughTablePlugin.titleBarButtons = ["full-screen", "toggle-query-mode"];
-drillthroughTablePlugin.eventListeners = [];
-drillthroughTablePlugin.contextMenuItems = [
-  "sort-drillthrough-table-descendingly",
-  "sort-drillthrough-table-ascendingly",
-];
-drillthroughTablePlugin.cellStyle = "alternate-background-cell-style";
-
-widgetPlugins["kpi"].menuItems = [
-  "remove-widget",
-  "duplicate-widget",
-  "save-as",
-];
-widgetPlugins["kpi"].titleBarButtons = ["full-screen", "toggle-query-mode"];
-widgetPlugins["kpi"].eventListeners = [];
-widgetPlugins["kpi"].contextMenuItems = ["copy-query", "refresh-query"];
-
-widgetPlugins["quick-filter"].menuItems = [
-  "remove-widget",
-  "quick-filter-switch-mode",
-];
-widgetPlugins["quick-filter"].titleBarButtons = [
-  "full-screen",
-  "toggle-query-mode",
-];
-widgetPlugins["quick-filter"].eventListeners = [];
-widgetPlugins["quick-filter"].contextMenuItems = [];
-
 export const pluginRegistry = createPluginRegistry({
   plugins: {
     "menu-item": _keyBy([pluginMenuItemSaveWidgetAs], "key"),
@@ -101,6 +72,8 @@ export const pluginRegistry = createPluginRegistry({
     allEventListenersPreset,
     allMenuItemsPreset,
     allTitleBarButtonsPreset,
-    allWidgetsPreset,
+    {
+      widget: widgetPlugins,
+    },
   ],
 });
