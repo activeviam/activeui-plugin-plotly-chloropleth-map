@@ -35,7 +35,7 @@
     }
   },
   "dependencies": {
-    "@activeviam/activeui-sdk": "5.0.0-beta",
+    "@activeviam/activeui-sdk": "5.0.0-beta-20210225140209-c8b44af",
     "@ant-design/icons": "^4.4.0",
     "@emotion/core": "^10.0.27",
     "@types/react-router-dom": "^5.1.3",
