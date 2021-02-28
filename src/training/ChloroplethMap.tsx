@@ -6,5 +6,5 @@ import { ChloroplethMapState } from "./chloropleth.types";
 type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
-  return <div>Hello world!</div>;
+  return <div style={props.style}>Hello world!</div>;
 };
