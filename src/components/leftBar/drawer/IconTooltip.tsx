@@ -12,7 +12,9 @@ export const IconTooltip: FC<IconTooltipProps> = (props) => {
   const iconProps = {
     onClick: () => setVisible(false),
     onMouseEnter: () => setVisible(true),
-    onMouseLeave: () => setVisible(false),
+    onMouseLeave: () => {
+      setVisible(false);
+    },
     style: {
       display: "flex",
       alignItems: "center",
