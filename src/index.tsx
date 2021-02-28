@@ -7,6 +7,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import "./index.css";
 import store from "./state/store";
 import App from "./components/App";
+import "antd/dist/antd.css";
 
 import { withLogin } from "./withLogin";
 import { withClients } from "./withClients";
@@ -19,8 +20,8 @@ import { getOverlayRoot } from "./getOverlayRoot";
 const render = () => {
   const WiredApp = withTranslations(
     withErrorBoundary(
-      withLogin(withClients(withStyle("light-activeviam")(App))),
-    ),
+      withLogin(withClients(withStyle("light-activeviam")(App)))
+    )
   );
 
   ReactDOM.render(
@@ -31,7 +32,7 @@ const render = () => {
         </DndProvider>
       </ReduxProvider>
     </AntdConfigProvider>,
-    document.getElementById("root"),
+    document.getElementById("root")
   );
 };
 

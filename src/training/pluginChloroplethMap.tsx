@@ -1,6 +1,7 @@
 import { WidgetPlugin } from "@activeviam/activeui-sdk";
 
 import { ChloroplethMapState } from "./chloropleth.types";
+import { ChloroplethContentEditor } from "./ChloroplethContentEditor";
 import { ChloroplethMap } from "./ChloroplethMap";
 import { IconWorld } from "./IconWorld";
 
@@ -8,6 +9,7 @@ const widgetKey = "chloropleth-map";
 
 export const pluginChloroplethMap: WidgetPlugin<ChloroplethMapState> = {
   Component: ChloroplethMap,
+  contentEditor: ChloroplethContentEditor,
   Icon: IconWorld,
   initialState: {
     widgetKey,
@@ -18,7 +20,7 @@ export const pluginChloroplethMap: WidgetPlugin<ChloroplethMapState> = {
             [Measures].[Real GDP per capita (USD).MEAN]
           } ON COLUMNS,
           NON EMPTY Hierarchize(
-            Descendants(
+            Descendants( 
               {
                 [Countries].[Country].[AllMember]
               },
