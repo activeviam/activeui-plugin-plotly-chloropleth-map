@@ -12,10 +12,13 @@ import {
 } from "@activeviam/activeui-sdk";
 
 import { pluginMenuItemSaveWidgetAs } from "./plugins/menu-items/pluginMenuItemSaveWidgetAs";
+import { pluginChloroplethMap } from "./training/pluginChloroplethMap";
 
 const widgetPlugins = allWidgetsPreset.widget;
+widgetPlugins[pluginChloroplethMap.key] = pluginChloroplethMap;
+
 const plotlyWidgetKeys = Object.keys(widgetPlugins).filter((key) =>
-  key.startsWith("plotly"),
+  key.startsWith("plotly")
 );
 
 plotlyWidgetKeys.forEach((key) => {
