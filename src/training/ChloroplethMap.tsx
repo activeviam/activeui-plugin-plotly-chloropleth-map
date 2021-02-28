@@ -25,7 +25,7 @@ const mdx = `
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const { data, error, isLoading } = useQueryResult({
     serverKey: "my-server",
-    queryId: "abc",
+    queryId: props.queryId,
     query: {
       mdx,
       updateMode: "once",
