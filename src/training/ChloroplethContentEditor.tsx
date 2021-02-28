@@ -4,13 +4,10 @@ import {
   Tree,
   ActionProps,
   useDataModel,
-  MdxSelect,
-  parse,
   getMeasures,
   Measure,
   removeAllMeasures,
   addMeasure,
-  stringify,
 } from "@activeviam/activeui-sdk";
 
 import { ChloroplethMapState } from "./chloropleth.types";
@@ -19,14 +16,7 @@ export const ChloroplethContentEditor: FC<ActionProps<ChloroplethMapState>> = (
   props
 ) => {
   const dataModel = useDataModel("my-server");
-
-  const mdx = useMemo(
-    () =>
-      props.widgetState.query
-        ? parse<MdxSelect>(props.widgetState.query.mdx)
-        : undefined,
-    [props.widgetState.query]
-  );
+  const { mdx } = props.widgetState.query;
 
   const selectedMeasureName = useMemo(
     () => (mdx ? getMeasures(mdx)[0].measureName : undefined),
@@ -57,7 +47,7 @@ export const ChloroplethContentEditor: FC<ActionProps<ChloroplethMapState>> = (
       measureName: measure.name,
     });
     const updatedWidgetState = produce(props.widgetState, (draft) => {
-      draft.query.mdx = stringify(mdxWithNewMeasure, { indent: true });
+      draft.query.mdx = mdxWithNewMeasure;
     });
     props.onWidgetChange(updatedWidgetState);
   };

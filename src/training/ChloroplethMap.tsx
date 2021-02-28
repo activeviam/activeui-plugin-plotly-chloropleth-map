@@ -1,15 +1,26 @@
-import React, { FC } from "react";
-import { useQueryResult, WidgetPluginProps } from "@activeviam/activeui-sdk";
+import React, { FC, useMemo } from "react";
+import {
+  stringify,
+  useQueryResult,
+  WidgetPluginProps,
+} from "@activeviam/activeui-sdk";
 
 import { ChloroplethMapState } from "./chloropleth.types";
 
 type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
+  const stringifiedQuery = useMemo(() => {
+    return {
+      ...props.widgetState.query,
+      mdx: stringify(props.widgetState.query.mdx, { indent: true }),
+    };
+  }, [props.widgetState.query]);
+
   const { data, error, isLoading } = useQueryResult({
     serverKey: "my-server",
     queryId: props.queryId,
-    query: props.widgetState.query,
+    query: stringifiedQuery,
   });
 
   if (isLoading) {
