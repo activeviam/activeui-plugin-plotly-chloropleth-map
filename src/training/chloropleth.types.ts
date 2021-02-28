@@ -1,3 +1,5 @@
-import { AWidgetState } from "@activeviam/activeui-sdk";
+import { AWidgetState, MdxString, Query } from "@activeviam/activeui-sdk";
 
-export type ChloroplethMapState = AWidgetState & {};
+export type ChloroplethMapState = AWidgetState & {
+  query: Query<MdxString>;
+};

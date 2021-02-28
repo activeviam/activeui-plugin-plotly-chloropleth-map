@@ -5,31 +5,11 @@ import { ChloroplethMapState } from "./chloropleth.types";
 
 type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
-const mdx = `
-  SELECT
-  NON EMPTY {
-    [Measures].[Real GDP per capita (USD).MEAN]
-  } ON COLUMNS,
-  NON EMPTY Hierarchize(
-    Descendants(
-      {
-        [Countries].[Country].[AllMember]
-      },
-      2,
-      SELF_AND_BEFORE
-    )
-  ) ON ROWS
-  FROM [Green-growth]
-`;
-
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const { data, error, isLoading } = useQueryResult({
     serverKey: "my-server",
     queryId: props.queryId,
-    query: {
-      mdx,
-      updateMode: "once",
-    },
+    query: props.widgetState.query,
   });
 
   if (isLoading) {
