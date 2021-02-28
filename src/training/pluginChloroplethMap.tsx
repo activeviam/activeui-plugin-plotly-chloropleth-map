@@ -13,4 +13,9 @@ export const pluginChloroplethMap: WidgetPlugin<ChloroplethMapState> = {
     widgetKey,
   },
   key: widgetKey,
+  translations: {
+    "en-US": {
+      key: "Chloropleth map",
+    },
+  },
 };
