@@ -1,4 +1,4 @@
 window.env = {
-  activePivotServerUrl: "https://activepivot-ranch.activeviam.com:5900",
-  contentServerUrl: "https://activepivot-ranch.activeviam.com:5900",
+  activePivotServerUrl: "http://localhost:51422",
+  contentServerUrl: "http://localhost:51422",
 };
