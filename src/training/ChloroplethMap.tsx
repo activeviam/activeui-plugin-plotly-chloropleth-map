@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import {
   getMeasures,
   stringify,
@@ -8,6 +8,7 @@ import {
 // @ts-expect-error
 import Plot from "react-plotly.js";
 import useComponentSize from "@rehooks/component-size";
+import { Slider } from "antd";
 
 import { ChloroplethMapState } from "./chloropleth.types";
 
@@ -15,6 +16,7 @@ type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const container = useRef<HTMLDivElement>(null);
+  const [selectedYear, setSelectedYear] = useState(2019);
   const { mdx } = props.widgetState.query;
 
   const { width, height } = useComponentSize(container);
@@ -34,16 +36,33 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
 
   const measureName = useMemo(() => getMeasures(mdx)[0].measureName, [mdx]);
 
-  const [countries, values] = useMemo(() => {
+  const [years, countries, values] = useMemo(() => {
     if (!data) {
-      return [[], []];
+      return [[], [], []];
     }
 
+    const columnsAxis = data.axes[0];
+    const numberOfYears = columnsAxis.positions.length;
+
+    const rowsAxis = data.axes[1];
+    const numberOfCountries = rowsAxis.positions.length;
+
+    const valuesForSelectedYear = new Array(numberOfCountries).fill(null);
+    data.cells.forEach((cell) => {
+      const rowIndex = Math.floor(cell.ordinal / numberOfYears);
+      const columnIndex = cell.ordinal % numberOfYears;
+      const year = columnsAxis.positions[columnIndex][0].captionPath[0];
+      if (year === `${selectedYear}`) {
+        valuesForSelectedYear[rowIndex] = cell.value;
+      }
+    });
+
     return [
-      data.axes[1].positions.map((position) => position[0].captionPath[2]),
-      data.cells.map((cell) => cell.value),
+      columnsAxis.positions.map((position) => position[0].captionPath[0]),
+      rowsAxis.positions.map((position) => position[0].captionPath[2]),
+      valuesForSelectedYear,
     ];
-  }, [data]);
+  }, [data, selectedYear]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -63,35 +82,57 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   }
 
   return (
-    <div ref={container} style={{ ...props.style, height: "100%" }}>
-      <Plot
-        data={[
-          {
-            type: "choropleth",
-            locationmode: "country names",
-            locations: countries,
-            z: values,
-            text: countries,
-            autocolorscale: true,
-          },
-        ]}
-        layout={{
-          height,
-          width,
-          margin: {
-            l: 20,
-            t: 30,
-            r: 20,
-            b: 20,
-          },
-          title: measureName,
-          geo: {
-            projection: {
-              type: "robinson",
+    <div
+      style={{
+        ...props.style,
+        height: "100%",
+      }}
+    >
+      <div ref={container} style={{ height: "calc(100% - 70px)" }}>
+        <Plot
+          data={[
+            {
+              type: "choropleth",
+              locationmode: "country names",
+              locations: countries,
+              z: values,
+              text: countries,
+              autocolorscale: true,
             },
-          },
-        }}
-      />
+          ]}
+          layout={{
+            height,
+            width,
+            margin: {
+              l: 20,
+              t: 30,
+              r: 20,
+              b: 20,
+            },
+            title: measureName,
+            geo: {
+              projection: {
+                type: "robinson",
+              },
+            },
+          }}
+        />
+      </div>
+      <div style={{ display: "flex" }}>
+        <div style={{ marginRight: 20 }}>Pick a year:</div>
+        <Slider
+          style={{ flex: 1 }}
+          marks={years.reduce((acc, year) => ({ ...acc, [year]: year }), {})}
+          min={1990}
+          max={2019}
+          value={selectedYear}
+          onChange={(newYear: number) => {
+            if (years.includes(`${newYear}`)) {
+              setSelectedYear(newYear);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

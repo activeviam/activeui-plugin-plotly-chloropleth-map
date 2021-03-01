@@ -9,19 +9,22 @@ const widgetKey = "chloropleth-map";
 
 const mdx = parse<MdxSelect>(`
   SELECT
-    NON EMPTY {
+  NON EMPTY Crossjoin(
+    [Green-growth].[Year].[Year].Members,
+    {
       [Measures].[Real GDP per capita (USD).MEAN]
-    } ON COLUMNS,
-    NON EMPTY Hierarchize(
-      Descendants( 
-        {
-          [Countries].[Country].[AllMember]
-        },
-        2,
-        SELF_AND_BEFORE
-      )
-    ) ON ROWS
-    FROM [Green-growth]
+    }
+  ) ON COLUMNS,
+  NON EMPTY Hierarchize(
+    Descendants(
+      {
+        [Countries].[Country].[AllMember]
+      },
+      2,
+      SELF_AND_BEFORE
+    )
+  ) ON ROWS
+  FROM [Green-growth]
 `);
 
 export const pluginChloroplethMap: WidgetPlugin<ChloroplethMapState> = {
