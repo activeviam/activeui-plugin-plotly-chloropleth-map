@@ -62,7 +62,10 @@
     "redux": "^4.0.5",
     "redux-undo": "^1.0.1",
     "tree-to-flat-map": "^1.0.1",
-    "use-persisted": "^0.1.2"
+    "use-persisted": "^0.1.2",
+    "@types/plotly.js": "^1.54.6",
+    "plotly.js": "^1.58.3",
+    "react-plotly.js": "^2.5.1"
   },
   "devDependencies": {
     "@testing-library/dom": "^7.10.1",

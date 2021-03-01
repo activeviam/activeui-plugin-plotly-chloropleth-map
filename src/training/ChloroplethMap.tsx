@@ -1,15 +1,20 @@
 import React, { FC, useMemo } from "react";
 import {
+  getMeasures,
   stringify,
   useQueryResult,
   WidgetPluginProps,
 } from "@activeviam/activeui-sdk";
+// @ts-expect-error
+import Plot from "react-plotly.js";
 
 import { ChloroplethMapState } from "./chloropleth.types";
 
 type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
+  const { mdx } = props.widgetState.query;
+
   const stringifiedQuery = useMemo(() => {
     return {
       ...props.widgetState.query,
@@ -22,6 +27,19 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     queryId: props.queryId,
     query: stringifiedQuery,
   });
+
+  const measureName = useMemo(() => getMeasures(mdx)[0].measureName, [mdx]);
+
+  const [countries, values] = useMemo(() => {
+    if (!data) {
+      return [[], []];
+    }
+
+    return [
+      data.axes[1].positions.map((position) => position[0].captionPath[2]),
+      data.cells.map((cell) => cell.value),
+    ];
+  }, [data]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -41,22 +59,27 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   }
 
   return (
-    <div style={{ ...props.style, height: "100%", overflow: "auto" }}>
-      {data.axes[1].positions.map((position, positionIndex) => {
-        return (
-          <div
-            key={positionIndex}
-            style={{
-              width: 500,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <span>{position[0].captionPath.join(" / ")}: </span>
-            <span>{data.cells[positionIndex].formattedValue}</span>
-          </div>
-        );
-      })}
+    <div style={{ ...props.style, height: "100%" }}>
+      <Plot
+        data={[
+          {
+            type: "choropleth",
+            locationmode: "country names",
+            locations: countries,
+            z: values,
+            text: countries,
+            autocolorscale: true,
+          },
+        ]}
+        layout={{
+          title: measureName,
+          geo: {
+            projection: {
+              type: "robinson",
+            },
+          },
+        }}
+      />
     </div>
   );
 };
