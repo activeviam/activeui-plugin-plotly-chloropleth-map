@@ -16,6 +16,8 @@ import {
 import { pluginMenuItemSaveWidgetAs } from "./plugins/menu-items/pluginMenuItemSaveWidgetAs";
 import { pluginChloroplethMap } from "./training/pluginChloroplethMap";
 
+pluginChloroplethMap.contextMenuItems = ["filter-on-selection"];
+
 const widgetPlugins = {
   [pluginWidgetPivotTable.key]: pluginWidgetPivotTable,
   [pluginWidgetPlotlyLineChart.key]: pluginWidgetPlotlyLineChart,

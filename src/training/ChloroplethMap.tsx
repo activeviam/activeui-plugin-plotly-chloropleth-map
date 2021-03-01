@@ -16,6 +16,7 @@ type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const container = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<number[]>([]);
   const [selectedYear, setSelectedYear] = useState(2019);
   const { mdx } = props.widgetState.query;
 
@@ -64,6 +65,27 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     ];
   }, [data, selectedYear]);
 
+  const handleCountriesSelected = ({ points }: Plotly.PlotMouseEvent) => {
+    if (!data || !props.onSelectionChange) {
+      return;
+    }
+
+    const pointIndices = points.map(({ pointIndex }) => pointIndex);
+    setSelection(pointIndices);
+
+    props.onSelectionChange({
+      headers: {
+        ROWS: pointIndices.map((pointIndex) => [
+          {
+            dimensionName: "Countries",
+            hierarchyName: "Country",
+            ...data.axes[1].positions[pointIndex][0],
+          },
+        ]),
+      },
+    });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -90,6 +112,7 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     >
       <div ref={container} style={{ height: "calc(100% - 70px)" }}>
         <Plot
+          onSelected={handleCountriesSelected}
           data={[
             {
               type: "choropleth",
@@ -98,6 +121,7 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
               z: values,
               text: countries,
               autocolorscale: true,
+              selectedpoints: selection.length > 0 ? selection : undefined,
             },
           ]}
           layout={{
