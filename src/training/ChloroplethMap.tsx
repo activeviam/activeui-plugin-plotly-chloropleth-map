@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useRef } from "react";
 import {
   getMeasures,
   stringify,
@@ -7,13 +7,17 @@ import {
 } from "@activeviam/activeui-sdk";
 // @ts-expect-error
 import Plot from "react-plotly.js";
+import useComponentSize from "@rehooks/component-size";
 
 import { ChloroplethMapState } from "./chloropleth.types";
 
 type ChloroplethMapProps = WidgetPluginProps<ChloroplethMapState>;
 
 export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
+  const container = useRef<HTMLDivElement>(null);
   const { mdx } = props.widgetState.query;
+
+  const { width, height } = useComponentSize(container);
 
   const stringifiedQuery = useMemo(() => {
     return {
@@ -59,7 +63,7 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   }
 
   return (
-    <div style={{ ...props.style, height: "100%" }}>
+    <div ref={container} style={{ ...props.style, height: "100%" }}>
       <Plot
         data={[
           {
@@ -72,6 +76,14 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
           },
         ]}
         layout={{
+          height,
+          width,
+          margin: {
+            l: 20,
+            t: 30,
+            r: 20,
+            b: 20,
+          },
           title: measureName,
           geo: {
             projection: {
