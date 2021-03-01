@@ -18,6 +18,11 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const container = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState<number[]>([]);
   const [selectedYear, setSelectedYear] = useState(2019);
+  const geoLayoutRef = useRef<Plotly.Layout["geo"] | undefined>({
+    projection: {
+      type: "robinson",
+    },
+  });
   const { mdx } = props.widgetState.query;
 
   const { width, height } = useComponentSize(container);
@@ -36,6 +41,19 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   });
 
   const measureName = useMemo(() => getMeasures(mdx)[0].measureName, [mdx]);
+
+  const layout: Partial<Plotly.Layout> = {
+    height,
+    width,
+    margin: {
+      l: 20,
+      t: 30,
+      r: 20,
+      b: 20,
+    },
+    title: measureName,
+    geo: geoLayoutRef.current,
+  };
 
   const [years, countries, values] = useMemo(() => {
     if (!data) {
@@ -65,13 +83,16 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     ];
   }, [data, selectedYear]);
 
-  const handleCountriesSelected = ({ points }: Plotly.PlotMouseEvent) => {
-    if (!data || !props.onSelectionChange) {
+  const handleCountriesSelected = (payload: Plotly.PlotMouseEvent) => {
+    if (!payload || !data || !props.onSelectionChange) {
       return;
     }
 
-    const pointIndices = points.map(({ pointIndex }) => pointIndex);
+    console.log(layout);
+    const pointIndices = payload.points.map(({ pointIndex }) => pointIndex);
     setSelection(pointIndices);
+
+    geoLayoutRef.current = layout.geo;
 
     props.onSelectionChange({
       headers: {
@@ -124,22 +145,7 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
               selectedpoints: selection.length > 0 ? selection : undefined,
             },
           ]}
-          layout={{
-            height,
-            width,
-            margin: {
-              l: 20,
-              t: 30,
-              r: 20,
-              b: 20,
-            },
-            title: measureName,
-            geo: {
-              projection: {
-                type: "robinson",
-              },
-            },
-          }}
+          layout={layout}
         />
       </div>
       <div style={{ display: "flex" }}>
