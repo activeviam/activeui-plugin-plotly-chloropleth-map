@@ -1,4 +1,3 @@
-import _keyBy from "lodash/keyBy";
 import {
   createPluginRegistry,
   allCellsPreset,
@@ -13,7 +12,6 @@ import {
   TableWidgetPlugin,
 } from "@activeviam/activeui-sdk";
 
-import { pluginMenuItemSaveWidgetAs } from "./plugins/menu-items/pluginMenuItemSaveWidgetAs";
 import { pluginChloroplethMap } from "./training/pluginChloroplethMap";
 
 pluginChloroplethMap.contextMenuItems = ["filter-on-selection"];
@@ -32,7 +30,7 @@ const plotlyWidgetKeys = Object.keys(widgetPlugins).filter((key) =>
 
 plotlyWidgetKeys.forEach((key) => {
   const widgetPlugin = widgetPlugins[key];
-  widgetPlugin.menuItems = ["remove-widget", "duplicate-widget", "save-as"];
+  widgetPlugin.menuItems = ["remove-widget", "duplicate-widget"];
   widgetPlugin.titleBarButtons = ["full-screen", "toggle-query-mode"];
   widgetPlugin.eventListeners = [];
   widgetPlugin.contextMenuItems = [
@@ -50,7 +48,7 @@ plotlyWidgetKeys.forEach((key) => {
 const pivotTablePlugin = widgetPlugins["pivot-table"] as TableWidgetPlugin;
 pivotTablePlugin.cell = "pivot-table-cell";
 pivotTablePlugin.cellStyle = "pivot-table-cell-style";
-pivotTablePlugin.menuItems = ["remove-widget", "duplicate-widget", "save-as"];
+pivotTablePlugin.menuItems = ["remove-widget", "duplicate-widget"];
 pivotTablePlugin.titleBarButtons = ["full-screen", "toggle-query-mode"];
 pivotTablePlugin.eventListeners = [];
 pivotTablePlugin.contextMenuItems = [
@@ -65,9 +63,6 @@ pivotTablePlugin.contextMenuItems = [
 ];
 
 export const pluginRegistry = createPluginRegistry({
-  plugins: {
-    "menu-item": _keyBy([pluginMenuItemSaveWidgetAs], "key"),
-  },
   presets: [
     allCellsPreset,
     allCellStylesPreset,

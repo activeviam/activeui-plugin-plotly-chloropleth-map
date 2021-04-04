@@ -1,26 +1,25 @@
-import { DashboardState } from "@activeviam/activeui-sdk";
+import {
+  DashboardState,
+  deserializeDashboardState,
+} from "@activeviam/activeui-sdk";
 
 import { Action } from "./actions";
 import { State } from "./store";
+import { serializedDashboard } from "../dashboard";
 
+const initialDashboardState = deserializeDashboardState(serializedDashboard);
 export interface DashboardUpdatedAction {
   type: "dashboardUpdated";
-  payload: DashboardState | null;
-}
-
-export interface DashboardUnloadedAction {
-  type: "dashboardUnloaded";
+  payload: DashboardState;
 }
 
 export const dashboardReducer = (
-  state: DashboardState | null = null,
-  action: Action,
+  state: DashboardState = initialDashboardState,
+  action: Action
 ) => {
   switch (action.type) {
     case "dashboardUpdated":
       return action.payload;
-    case "dashboardUnloaded":
-      return null;
     default:
       return state;
   }
@@ -31,10 +30,6 @@ export const onDashboardUpdated = (newDashboard: DashboardState) => ({
   payload: newDashboard,
 });
 
-export const onDashboardUnloaded = () => ({
-  type: "dashboardUnloaded",
-});
-
-export const getDashboardState = (state: State) => {
-  return state.dashboard.present;
+export const getDashboardState = (state: State): DashboardState => {
+  return state.dashboard.present ?? initialDashboardState;
 };

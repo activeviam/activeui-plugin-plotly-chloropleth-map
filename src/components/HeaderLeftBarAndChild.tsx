@@ -45,7 +45,6 @@ export const HeaderLeftBarAndChild: FC<{}> = ({ children }) => {
         height={40}
         isMenuVisible={true}
         isProductNameVisible={false}
-        isSearchVisible={false}
         isTitleVisible={true}
       />
       <div

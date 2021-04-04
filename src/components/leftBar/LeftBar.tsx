@@ -15,11 +15,8 @@ const { Item } = Menu;
 export const leftBarWidth = 32; // px
 
 const shortcuts: { [key in number | string]: DrawerKey } = {
-  w: "widgets",
   f: "filters",
   c: "contentEditor",
-  y: "styleEditor",
-  q: "queryEditor",
 };
 
 const LeftBar: FC = () => {

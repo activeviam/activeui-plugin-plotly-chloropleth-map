@@ -5,25 +5,14 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { usePrevious } from "react-use";
 import { MenuProps } from "antd/lib/menu";
-import {
-  TitleInput,
-  useTheme,
-  useIsPresenting,
-} from "@activeviam/activeui-sdk";
+import { useIsPresenting } from "@activeviam/activeui-sdk";
 
 import Menu from "antd/lib/menu";
 
 import Logo from "./Logo";
-import { FileMenu } from "./FileMenu";
 import { EditMenu } from "./EditMenu";
 import { HelpMenu } from "./HelpMenu";
-import { UserMenu } from "./UserMenu";
-import {
-  getDashboardState,
-  onDashboardUpdated,
-} from "../../state/dashboardDuck";
-import { useSaveDashboard } from "../../hooks/useSaveDashboard";
-import { HomeSearch } from "./HomeSearch";
+import { getDashboardState } from "../../state/dashboardDuck";
 import ToggleIsPresenting from "./ToggleIsPresenting";
 import { onIsPresentingChanged } from "../../state/isPresentingDuck";
 import { useIntl } from "react-intl";
@@ -52,7 +41,6 @@ interface HeaderProps {
   height: number;
   isMenuVisible: boolean;
   isProductNameVisible: boolean;
-  isSearchVisible: boolean;
   isTitleVisible: boolean;
   onPathChanged?: (path: string[]) => void;
 }
@@ -69,13 +57,10 @@ const Header: FC<HeaderProps> = (props) => {
 
   const dashboardName = dashboard?.name || defaultDashboardName;
   const previousDashboardName = usePrevious(
-    title === undefined ? "" : dashboardName,
+    title === undefined ? "" : dashboardName
   );
 
-  const saveDashboard = useSaveDashboard();
   const dispatch = useDispatch();
-
-  const theme = useTheme();
 
   useEffect(() => {
     // When loading a dashboard, use its name as title
@@ -90,27 +75,6 @@ const Header: FC<HeaderProps> = (props) => {
 
   const goHome = () => {
     history.push("/");
-  };
-
-  const isPlaceholder = title === defaultDashboardName;
-  const handleTitleBlurred = () => {
-    // do not save a title that is the default name
-    if (isPlaceholder) {
-      return;
-    }
-
-    if (dashboard && title !== dashboardName) {
-      if (title) {
-        const newDashboard = {
-          ...dashboard,
-          name: title,
-        };
-        dispatch(onDashboardUpdated(newDashboard));
-        saveDashboard(newDashboard);
-      } else {
-        setTitle(dashboardName);
-      }
-    }
   };
 
   const handleIsPresentingToggled = () => {
@@ -133,51 +97,25 @@ const Header: FC<HeaderProps> = (props) => {
         onClick={goHome}
         isProductNameVisible={props.isProductNameVisible}
       />
-      {props.isTitleVisible && (
-        <TitleInput
-          css={{
-            display: "flex",
-            alignItems: "center",
-            width: 440,
-          }}
-          inputCss={{
-            background: "transparent",
-            boxShadow: "none",
-            height: 24,
-            marginTop: 8,
-            marginBottom: 8,
-            width: 440,
-            fontSize: 16,
-            fontWeight: 400,
-            color: isPlaceholder ? theme.grayScale[7] : theme.white,
-            ":hover": {
-              borderColor: theme.grayScale[9],
-            },
-            ":focus": {
-              borderColor: theme.white,
-              color: theme.white,
-            },
-          }}
-          tooltipValue={formatMessage({ id: "aui.rename" })}
-          value={title || ""}
-          onChange={setTitle}
-          onBlur={handleTitleBlurred}
-          isPlaceholder={isPlaceholder}
-        />
-      )}
+      <h1
+        style={{
+          color: "#fff",
+          fontSize: "1.5em",
+          marginBottom: 0,
+          marginRight: 50,
+        }}
+      >
+        When you are done with the ActiveUI tutorial, you will have this.
+      </h1>
       {props.isMenuVisible && (
         <HeaderMenu
           css={{
             marginLeft: "0px !important",
           }}
         >
-          <FileMenu />
           <EditMenu />
           <HelpMenu />
         </HeaderMenu>
-      )}
-      {props.isSearchVisible && (
-        <HomeSearch onPathChanged={props.onPathChanged} />
       )}
       <HeaderMenu
         css={{
@@ -194,7 +132,6 @@ const Header: FC<HeaderProps> = (props) => {
             />
           </Menu.Item>
         ) : null}
-        <UserMenu />
       </HeaderMenu>
     </div>
   );

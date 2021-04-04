@@ -1,6 +1,6 @@
 {
   "name": "activeui-plugin-plotly-chloropleth-map",
-  "version": "1.0.0",
+  "version": "5.0.0-beta",
   "private": true,
   "description": "An ActiveUI application featuring a custom chloropleth map widget, for teaching purposes",
   "homepage": ".",

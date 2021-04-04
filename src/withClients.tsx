@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState, useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { FC, useEffect, useState } from "react";
 import {
   ContentClient,
   ClientsProvider,
@@ -12,7 +11,6 @@ import {
   contentServerUrl,
   serverKey,
 } from "./serverUrls";
-import { getToken } from "./state/credentialsDuck";
 import LoadingBackground from "./components/LoadingBackground";
 import { versions } from "./versions";
 
@@ -30,30 +28,19 @@ let clients: {
 
 /**
  * Provides a client.
- * Requires a valid token.
  */
 export const withClients = (WrappedComponent: FC): FC => () => {
-  const token = useSelector(getToken);
   const [, setAreClientsInstantiated] = useState<boolean>(false);
 
-  const requestInit = useMemo(() => {
-    if (!token) {
-      return undefined;
-    }
-    return { headers: { authorization: `Jwt ${token}` } };
-  }, [token]);
-
   useEffect(() => {
-    if (!clients && requestInit && activePivotServerUrl && contentServerUrl) {
+    if (!clients && activePivotServerUrl && contentServerUrl) {
       const contentClient = createContentClient({
         url: contentServerUrl,
         version: versions.apis.content.versions[0],
-        requestInit,
       });
       const activePivotClient = createActivePivotClient({
         url: activePivotServerUrl,
         version: versions.apis.pivot.versions[0],
-        requestInit,
       });
       clients = {
         activePivot: { [serverKey]: activePivotClient },
@@ -61,9 +48,9 @@ export const withClients = (WrappedComponent: FC): FC => () => {
       };
       setAreClientsInstantiated(true);
     }
-  }, [requestInit]);
+  }, []);
 
-  if (!clients || !requestInit) {
+  if (!clients) {
     return <LoadingBackground />;
   }
 
