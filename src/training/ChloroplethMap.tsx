@@ -1,4 +1,11 @@
-import React, { FC, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   getMeasures,
   stringify,
@@ -87,19 +94,30 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     setSelection(pointIndices);
 
     geoLayoutRef.current = layout.geo;
-
-    props.onSelectionChange({
-      headers: {
-        ROWS: pointIndices.map((pointIndex) => [
-          {
-            dimensionName: "Countries",
-            hierarchyName: "Country",
-            ...data.axes[1].positions[pointIndex][0],
-          },
-        ]),
-      },
-    });
   };
+
+  const handleKeyUp = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      setSelection([]);
+    }
+  };
+
+  const { onSelectionChange } = props;
+  useEffect(() => {
+    if (data && onSelectionChange) {
+      onSelectionChange({
+        headers: {
+          ROWS: selection.map((pointIndex) => [
+            {
+              dimensionName: "Countries",
+              hierarchyName: "Country",
+              ...data.axes[1].positions[pointIndex][0],
+            },
+          ]),
+        },
+      });
+    }
+  }, [data, selection, onSelectionChange]);
 
   return (
     <div
@@ -107,6 +125,9 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
         ...props.style,
         height: "100%",
       }}
+      // In order to be able to catch keyboard events
+      tabIndex={0}
+      onKeyUp={handleKeyUp}
     >
       <div ref={container} style={{ height: "calc(100% - 70px)" }}>
         {isLoading ? (
