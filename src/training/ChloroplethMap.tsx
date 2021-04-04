@@ -7,7 +7,6 @@ import {
 } from "@activeviam/activeui-sdk";
 // @ts-expect-error
 import Plot from "react-plotly.js";
-import useComponentSize from "@rehooks/component-size";
 import { Slider } from "antd";
 
 import { ChloroplethMapState } from "./chloropleth.types";
@@ -25,8 +24,6 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   });
   const { mdx } = props.widgetState.query;
 
-  const { width, height } = useComponentSize(container);
-
   const stringifiedQuery = useMemo(() => {
     return {
       ...props.widgetState.query,
@@ -43,8 +40,6 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
   const measureName = useMemo(() => getMeasures(mdx)[0].measureName, [mdx]);
 
   const layout: Partial<Plotly.Layout> = {
-    height,
-    width,
     margin: {
       l: 20,
       t: 30,
@@ -88,7 +83,6 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
       return;
     }
 
-    console.log(layout);
     const pointIndices = payload.points.map(({ pointIndex }) => pointIndex);
     setSelection(pointIndices);
 
@@ -107,23 +101,6 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
     });
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <h3>Error</h3>
-        <p>{error.stackTrace}</p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return <div>No data.</div>;
-  }
-
   return (
     <div
       style={{
@@ -132,21 +109,31 @@ export const ChloroplethMap: FC<ChloroplethMapProps> = (props) => {
       }}
     >
       <div ref={container} style={{ height: "calc(100% - 70px)" }}>
-        <Plot
-          onSelected={handleCountriesSelected}
-          data={[
-            {
-              type: "choropleth",
-              locationmode: "country names",
-              locations: countries,
-              z: values,
-              text: countries,
-              autocolorscale: true,
-              selectedpoints: selection.length > 0 ? selection : undefined,
-            },
-          ]}
-          layout={layout}
-        />
+        {isLoading ? (
+          "Loading..."
+        ) : error ? (
+          error.stackTrace
+        ) : (
+          <Plot
+            onSelected={handleCountriesSelected}
+            data={[
+              {
+                type: "choropleth",
+                locationmode: "country names",
+                locations: countries,
+                z: values,
+                text: countries,
+                autocolorscale: true,
+                selectedpoints: selection.length > 0 ? selection : undefined,
+              },
+            ]}
+            layout={{
+              height: container.current?.clientHeight,
+              width: container.current?.clientWidth,
+              ...layout,
+            }}
+          />
+        )}
       </div>
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: 20 }}>Pick a year:</div>
