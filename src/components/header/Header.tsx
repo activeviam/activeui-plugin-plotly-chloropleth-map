@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { FC, CSSProperties, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { usePrevious } from "react-use";
 import { MenuProps } from "antd/lib/menu";
@@ -46,7 +45,6 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = (props) => {
-  const history = useHistory();
   const { formatMessage } = useIntl();
 
   const dashboard = useSelector(getDashboardState);
@@ -73,10 +71,6 @@ const Header: FC<HeaderProps> = (props) => {
     }
   }, [dashboard, dashboardName, previousDashboardName, title]);
 
-  const goHome = () => {
-    history.push("/");
-  };
-
   const handleIsPresentingToggled = () => {
     dispatch(onIsPresentingChanged(!isPresenting));
   };
@@ -93,10 +87,7 @@ const Header: FC<HeaderProps> = (props) => {
         padding-right: 4px;
       `}
     >
-      <Logo
-        onClick={goHome}
-        isProductNameVisible={props.isProductNameVisible}
-      />
+      <Logo isProductNameVisible={props.isProductNameVisible} />
       <h1
         style={{
           color: "#fff",

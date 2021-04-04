@@ -1,11 +1,10 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
-import { MouseEvent, FC } from "react";
+import { FC } from "react";
 import { Title } from "@activeviam/activeui-sdk";
 
 interface LogoProps {
   isProductNameVisible: boolean;
-  onClick: (event: MouseEvent<HTMLDivElement>) => void;
 }
 
 const Logo: FC<LogoProps> = (props) => (
@@ -16,7 +15,6 @@ const Logo: FC<LogoProps> = (props) => (
       cursor: "pointer",
       ...(props.isProductNameVisible && { width: 120 }),
     }}
-    onClick={props.onClick}
   >
     <svg
       width="24px"
